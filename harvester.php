@@ -1,22 +1,15 @@
 <?php 
-
 require 'inc/config.php';             
 require 'inc/functions.php';
-
-
 if (isset($_GET["oai"])) {
-
     $oaiUrl = $_GET["oai"];
     $client_harvester = new \Phpoaipmh\Client(''.$oaiUrl.'');
     $myEndpoint = new \Phpoaipmh\Endpoint($client_harvester);
-
-
     // Result will be a SimpleXMLElement object
     $identify = $myEndpoint->identify();
     echo '<pre>';
  
     // Store repository data - Início
-
     $body_repository["doc"]["name"] = (string)$identify->Identify->repositoryName;
     $body_repository["doc"]["metadataFormat"] = $_GET["metadataFormat"];
     if (isset($_GET["qualis2015"])) {
@@ -25,19 +18,15 @@ if (isset($_GET["oai"])) {
     $body_repository["doc"]["date"] = (string)$identify->responseDate;
     $body_repository["doc"]["url"] = (string)$identify->request;
     $body_repository["doc_as_upsert"] = true;
-
-    $insert_repository_result = elasticsearch::elastic_update($body_repository["doc"]["url"],"repository",$body_repository);
+    $insert_repository_result = elasticsearch::elastic_update($body_repository["doc"]["url"],"journals",$body_repository);
     print_r($insert_repository_result);
-
     // Store repository data - Fim
-
     // Results will be iterator of SimpleXMLElement objects
     $results = $myEndpoint->listMetadataFormats();
     $metadata_formats = [];
     foreach ($results as $item) {
         $metadata_formats[] = $item->{"metadataPrefix"};
     }
-
     if ($_GET["metadataFormat"] == "nlm") {
         
         if (isset($_GET["set"])) {
@@ -48,14 +37,9 @@ if (isset($_GET["oai"])) {
         
         
         foreach ($recs as $rec) {
-
             //print_r($rec);
-
             if ($rec->{'header'}->attributes()->{'status'} != "deleted") {
-
                 $sha256 = hash('sha256', ''.$rec->{'header'}->{'identifier'}.'');
-
-
                 $query["doc"]["source"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'journal-meta'}->{'journal-title'};
                 $query["doc"]["harvester_id"] = (string)$rec->{'header'}->{'identifier'};
                 if (isset($_GET["qualis2015"])) {
@@ -66,7 +50,6 @@ if (isset($_GET["oai"])) {
                 $query["doc"]["ano"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'pub-date'}[0]->{'year'};
                 $query["doc"]["doi"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'article-id'}[1];
                 $query["doc"]["resumo"] = str_replace('"', '', (string)$rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'abstract'}->{'p'});
-
                 // Palavras-chave
                 if (isset($rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'kwd-group'}[0]->{'kwd'})) {
                     foreach ($rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'kwd-group'}[0]->{'kwd'} as $palavra_chave) {
@@ -74,19 +57,13 @@ if (isset($_GET["oai"])) {
                         foreach ($palavraschave_array  as $pc) { 
                             $query["doc"]["palavras_chave"][] = trim($pc);
                         }
-
                     }
                 }
-
-
                 $i = 0;
                 foreach ($rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'contrib-group'}->{'contrib'} as $autores) {
-
                     if ($autores->attributes()->{'contrib-type'} == "author") {
-
                         $query["doc"]["autores"][$i]["nomeCompletoDoAutor"] = (string)$autores->{'name'}->{'given-names'}.' '.$autores->{'name'}->{'surname'};
                         $query["doc"]["autores"][$i]["nomeParaCitacao"] = (string)$autores->{'name'}->{'surname'}.', '.$autores->{'name'}->{'given-names'};
-
                         if (isset($autores->{'aff'})) {
                             $result_tematres = authorities::tematres(strip_tags((string)$autores->{'aff'}),$tematres_url);
                             if (!empty($result_tematres["found_term"])) {
@@ -95,14 +72,12 @@ if (isset($_GET["oai"])) {
                                 $query["doc"]["autores"][$i]["afiliacao_nao_normalizada"] = strip_tags((string)$autores->{'aff'});                                
                             }
                         }
-
                         if (isset($autores->{'uri'})) {
                             $query["doc"]["autores"][$i]["nroIdCnpq"] = (string)$autores->{'uri'};
                         }
                         $i++;
                     }
                 }
-
                 $query["doc"]["artigoPublicado"]["tituloDoPeriodicoOuRevista"] = str_replace('"','',(string)$rec->{'metadata'}->{'article'}->{'front'}->{'journal-meta'}->{'journal-title'});
                 $query["doc"]["artigoPublicado"]["nomeDaEditora"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'journal-meta'}->{'publisher'}->{'publisher-name'};
                 $query["doc"]["artigoPublicado"]["issn"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'journal-meta'}->{'issn'};
@@ -111,15 +86,11 @@ if (isset($_GET["oai"])) {
                 $query["doc"]["artigoPublicado"]["paginaInicial"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'issue-id'};
                 $query["doc"]["artigoPublicado"]["serie"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'issue-title'};
                 $query["doc"]["url_principal"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'self-uri'}->attributes('http://www.w3.org/1999/xlink');
-
                 $query["doc"]["origin"] = "OAI-PHM";
                 $query["doc_as_upsert"] = true;
-
-
                 foreach ($rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'self-uri'} as $self_uri) {
                     $query["doc"]["relation"][]=(string)$self_uri->attributes('http://www.w3.org/1999/xlink');
                 }
-
                 if ($use_grobid == true) {
                     foreach ($query["doc"]["relation"] as $url_download) {
                         $content = file_get_contents(str_replace("view", "download", $url_download));
@@ -174,17 +145,13 @@ if (isset($_GET["oai"])) {
                                     }                                    
                                 }
                                 //print_r($reference_array);
-
                                 /* Verifica se a referencia existe e cria um registro de citação em caso negativo */
-
                                 if (isset($reference_array["analytic"])) {
                                     queryRef($reference_array["analytic"]["title"]);
                                 } elseif (!empty($reference_array["monogr"]["title"])) {
                                     queryRef($reference_array["monogr"]["title"]);
                                 }
-
                                 /* FIM */
-
                                 $i_references++;
                             }                        
                         }                        
@@ -192,20 +159,14 @@ if (isset($_GET["oai"])) {
                         unset($citation_array);
                     }
                 }
-
                 //print_r($query);
-
                 $resultado = elasticsearch::elastic_update($sha256, $type, $query);
                 print_r($resultado);
-
                 unset($query);
                 flush();
-
             }
         }
-
     } elseif ($_GET["metadataFormat"] == "oai_dc") {
-
         if (isset($_GET["set"])) {
             $recs = $myEndpoint->listRecords('oai_dc',null,null,$_GET["set"]);
         } else {
@@ -214,25 +175,19 @@ if (isset($_GET["oai"])) {
         foreach ($recs as $rec) {
             $data = $rec->metadata->children( 'http://www.openarchives.org/OAI/2.0/oai_dc/' );
             $rows = $data->children( 'http://purl.org/dc/elements/1.1/' );
-
             //var_dump ($rows);
-
             if (isset($rows->publisher)) {                
                 $body["doc"]["artigoPublicado"]["nomeDaEditora"] = (string)$rows->publisher;
             }
-
             if (isset($rows->title)) {                
                 $body["doc"]["titulo"] = (string)$rows->title[0];
             }
-
             if (isset($rows->relation)) {                
                 $body["doc"]["doi"] = (string)$rows->relation;
             }
-
             if (isset($rows->identifier)) {                
                 $body["doc"]["url_principal"] = (string)$rows->identifier;
             }
-
             if (isset($rows->identifier)) {                
                 $body["doc"]["relation"][] = (string)$rows->identifier;
             }            
@@ -254,11 +209,9 @@ if (isset($_GET["oai"])) {
                     $i++;
                 }
             }
-
             if (isset($rows->date)) {                
                 $body["doc"]["ano"] = substr((string)$rows->date, 0, 4);
             }            
-
             if (isset($rows->relation)) {
                 $body["doc"]["relation"][] = "https://dx.doi.org/" . (string)$rows->relation;
             }            
@@ -280,12 +233,8 @@ if (isset($_GET["oai"])) {
             //print_r($resultado);            
             //print_r($body);
             unset($body);    
-
-
-
         }
     
-
         
     } else {
         
@@ -293,9 +242,7 @@ if (isset($_GET["oai"])) {
         var_dump($recs);
         foreach ($recs as $rec) {
             if ($rec->{'header'}->attributes()->{'status'} != "deleted") {
-
                 $sha256 = hash('sha256', ''.$rec->{'header'}->{'identifier'}.'');
-
                 $query["doc"]["source"] = (string)$identify->Identify->repositoryName;
                 $query["doc"]["set"] = str_replace("xviiienancib:ENANCIB:", "", (string)$rec->{'header'}->{'setSpec'});
                 $query["doc"]["harvester_id"] = (string)$rec->{'header'}->{'identifier'};
@@ -318,8 +265,6 @@ if (isset($_GET["oai"])) {
                         }                             
                     }
                 }
-
-
                 $i = 0;
                 foreach ($rec->{'metadata'}->{'rfc1807'}->{'author'} as $autor) {
                     $autor_array = explode(";", (string)$autor);
@@ -336,7 +281,6 @@ if (isset($_GET["oai"])) {
                     }
                     $i++;
                 }
-
                 $query["doc"]["artigoPublicado"]["tituloDoPeriodicoOuRevista"] = (string)$identify->Identify->repositoryName;
                 //$query["doc"]["artigoPublicado"]["nomeDaEditora"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'journal-meta'}->{'publisher'}->{'publisher-name'};
                 //$query["doc"]["artigoPublicado"]["issn"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'journal-meta'}->{'issn'};
@@ -345,18 +289,12 @@ if (isset($_GET["oai"])) {
                 //$query["doc"]["artigoPublicado"]["paginaInicial"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'issue-id'};
                 //$query["doc"]["artigoPublicado"]["serie"] = (string)$rec->{'metadata'}->{'article'}->{'front'}->{'article-meta'}->{'issue-title'};
                 $query["doc"]["url_principal"] = (string)$rec->{'metadata'}->{'rfc1807'}->{'id'};
-
-
                 $query["doc"]["relation"][]=(string)$rec->{'metadata'}->{'rfc1807'}->{'id'};
-
                 $query["doc_as_upsert"] = true;
-
                 $resultado = elasticsearch::elastic_update($sha256, $type, $query);
                 print_r($resultado);
-
                 unset($query);
                 flush();
-
             }
         }        
     } 
@@ -364,7 +302,6 @@ if (isset($_GET["oai"])) {
     echo $_GET["delete"];
     echo '<br/>';
     echo $_GET["delete_name"];
-
     $delete_repository = elasticsearch::elastic_delete($_GET["delete"], "repository");
     print_r($delete_repository);
     echo '<br/>';
@@ -373,10 +310,7 @@ if (isset($_GET["oai"])) {
     echo '<br/><br/>';
     $delete_records = elasticsearch::elastic_delete_by_query("journals", $body);
     print_r($delete_records);
-
-
 } else {
     echo "URL não informada";
 }
-
 ?>

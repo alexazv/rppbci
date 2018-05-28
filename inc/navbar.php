@@ -46,12 +46,13 @@
                 </li>
                 <li class="uk-active">
                     <a href="http://labimetrics.inf.br">Lab-iMetrics</a>
-                </li>                   
-                <?php if ($_SESSION['localeToUse'] == 'en_US') : ?>
+                </li> 
+                  
+                <?php /*if ($_SESSION['localeToUse'] == 'en_US') : ?>
                     <li><a href="http://<?php echo ''.$_SERVER['SERVER_NAME'].$_SERVER["SCRIPT_NAME"].''; ?>?<?php echo $_SERVER["QUERY_STRING"]; ?>&locale=pt_BR">Português</a></li>
                 <?php else : ?>
                     <li><a href="http://<?php echo ''.$_SERVER['SERVER_NAME'].$_SERVER["SCRIPT_NAME"].''; ?>?<?php echo $_SERVER["QUERY_STRING"]; ?>&locale=en_US">English</a></li>
-                <?php endif ; ?>                
+                <?php endif ; */?>                
                 
 
             </ul>

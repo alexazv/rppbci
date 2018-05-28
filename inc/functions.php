@@ -1,12 +1,9 @@
 <?php
-
 if (file_exists('functions_core/functions_core.php')) {
     include 'functions_core/functions_core.php';
 } else {
     include '../functions_core/functions_core.php';
 }
-
-
 /**
  * Class Inicio
  *
@@ -42,7 +39,6 @@ class Inicio
         
         $response = $client->search($params);
         return $response["hits"]["total"];
-
     } 
     
     static function top_registros() 
@@ -66,12 +62,9 @@ class Inicio
         $params["body"] = $query;        
         
         $data = $client->search($params);  
-
         //print_r($data);
-
         foreach ($data["hits"]["hits"] as $r) {
             //var_dump($r);
-
             echo '<dl class="uk-description-list">'; 
             //print_r($r);
             echo '<dt><a href="'.$r['_source']['url_principal'].'">'.$r['_source']['titulo'].' ('.$r['_source']['ano'].' - '.$r['_source']['source'].') - <b>'.$r['_source']['facebook']['facebook_total'].' interações</b></a></dt>';
@@ -96,28 +89,21 @@ class Inicio
         global $index;
         global $type;
         global $client;
-
         $query["aggs"]["counts"]["terms"]["field"] = "$field.keyword";
         $query["aggs"]["counts"]["terms"]["size"] = 1000;
-
         $params = [];
         $params["index"] = $index;
         $params["type"] = $type;
         $params["size"] = 10;
         $params["body"] = $query;           
-
         $data = $client->search($params);
-
-
         foreach ($data["aggregations"]["counts"]["buckets"] as $facets) {
             echo '<div class="uk-width-medium-1-5"><div class="uk-panel uk-panel-hover" data-my-category="'.$facets['key'][0].'" data-my-category2="'.$facets['doc_count'].'"><p><i class="uk-icon-bookmark"></i> <a href="result.php?&search[]=+'.$field.'.keyword:&quot;'.htmlentities(urlencode($facets['key'])).'&quot;">'.$facets['key'].' ('.number_format($facets['doc_count'],0,',','.').')</a></p></div></div>';
         }
-
     } 
      
     
 }
-
 /**
  * Class Admin
  *
@@ -141,20 +127,16 @@ class Admin
         global $index;
         global $type;
         global $client;
-
         $query["aggs"]["counts"]["terms"]["field"] = "$field.keyword";
         $query["aggs"]["counts"]["terms"]["order"]["_term"] = "asc";
         $query["aggs"]["counts"]["terms"]["size"] = 10000;
-
         $params = [];
         $params["index"] = $index;
-        $params["type"] = "repository";
+        $params["type"] = "journals";
         $params["size"] = 1000;
         $params["body"] = $query;           
-
         $data = $client->search($params);
         //print_r($data["hits"]["hits"]);
-
         echo '<table class="uk-table">';
         echo '<thead>';
         echo '<tr>';
@@ -182,9 +164,7 @@ class Admin
 	}
         echo '</tbody>';
         echo '</table>';
-
     }
-
     /** 
      * Count records
      * 
@@ -197,7 +177,6 @@ class Admin
         $result = elasticsearch::elastic_search($type, null, 0, $body); 
         return $result["hits"]["total"];
     }
-
     /** 
      * Adicionar divulgação científica
      * 
@@ -206,7 +185,6 @@ class Admin
      */      
     static function addDivulgacao($titulo,$url,$id)
     {
-
         $result_get = elasticsearch::elastic_get($id, "journals", "div_cientifica");
         if (count($result_get['_source']['div_cientifica']) > 0) {
             $body["doc"]["div_cientifica"] = $result_get['_source']['div_cientifica'];
@@ -219,10 +197,8 @@ class Admin
         
         $result_insert = elasticsearch::elastic_update($id,"journals",$body);    
         print_r($result_insert);    
-
     }
 }
-
 class ProcessaResultados
 {
     
@@ -259,7 +235,6 @@ class ProcessaResultados
         return $comma_separated;
     }
 }    
-
 /**
  * Class Facebook
  *
@@ -335,7 +310,6 @@ class Facebook
                 echo '<div class="uk-badge uk-badge-notification">Nenhuma interação no facebook</div><br/>';
             }
             $i++;
-
         }
         
     
@@ -373,7 +347,6 @@ class Facebook
         
         elasticsearch::elastic_update($id, "journals", $body);
     }
-
     static function facebook_doi($urls,$id) 
     {
         global $fb;
@@ -427,7 +400,6 @@ class Facebook
                 //echo '<div class="uk-badge uk-badge-notification">Nenhuma interação no facebook pelo DOI</div><br/>';
             }
             $i++;
-
         }
         
     
@@ -465,7 +437,6 @@ class Facebook
         
         elasticsearch::elastic_update($id,"journals",$body);
     }
-
     static function facebook_divulgacao($urls,$id) 
     {
         global $fb;
@@ -533,7 +504,6 @@ class Facebook
                 echo '<div class="uk-badge uk-badge-notification">Nenhuma interação no facebook em divulgação cientifica</div><br/>';
             }
             $i++;
-
         }
         
     
@@ -573,7 +543,6 @@ class Facebook
     }        
     
 }
-
 class altmetric_com
 {
     static function get_altmetrics ($doi,$id) 
@@ -598,10 +567,8 @@ class altmetric_com
         //print_r($result);        
     }     
 }
-
 function grobidQuery($content, $grobid_url) 
 {
-
     // initialise the curl request
     $request = curl_init('143.107.154.38:8070/api/processReferences');
     // send a file
@@ -625,10 +592,7 @@ function grobidQuery($content, $grobid_url)
     //}
     return $xml;         
     curl_close($request);
-
 }
-
-
 /*Deletar Excluídos*/
 function exclude_deleted()
 {
