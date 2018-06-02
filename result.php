@@ -3,6 +3,7 @@
 
 require 'inc/config.php'; 
 require 'inc/functions.php';
+require 'inc/functions_additional.php';
 
 if (!empty($_POST)) {
     Admin::addDivulgacao($_POST["titulo"],$_POST["url"],$_POST["id"]);
@@ -315,6 +316,7 @@ $mode = "reference";
                                                 </li>
                                             </ul>
                                             <?php endif; ?>
+                                            <?php Google::youtube_search($r["_source"]['relation'],$r["_id"]);?>
                                             <ul>
                                                 <li>
                                                     <?php Facebook::facebook_data($r["_source"]['relation'],$r["_id"]);?>
