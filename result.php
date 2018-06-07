@@ -316,9 +316,12 @@ $mode = "reference";
                                                 </li>
                                             </ul>
                                             <?php endif; ?>
+
+                                            <?php Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"]);?>
                                             <?php Google::youtube_search($r["_source"]['relation'],$r["_id"]);?>
                                             <ul>
                                                 <li>
+                                                
                                                     <?php Facebook::facebook_data($r["_source"]['relation'],$r["_id"]);?>
                                                     <!--
                                                     < ?php
@@ -334,7 +337,9 @@ $mode = "reference";
                                                         <?php foreach ($r["_source"]['div_cientifica'] as $div_source) :?>
                                                         <?php $url_array[] = $div_source['url']; ?>
                                                         <?php endforeach; ?>
+                                                        
                                                         <?php Facebook::facebook_divulgacao($url_array,$r["_id"]);?>
+                                                        
                                                         <?php unset($url_array);?>
                                                     <?php endif; ?>
                                                 </li>

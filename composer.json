@@ -5,6 +5,7 @@
     "caseyamcl/phpoaipmh": "~2.0",
     "guzzlehttp/guzzle":   "~5.0",
     "gettext/gettext": "^4.1",
-     "google/apiclient": "^2.0"    
+     "google/apiclient": "^2.0",  
+     "dg/twitter-php": "^3.7"  
   }
 }
