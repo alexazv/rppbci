@@ -151,7 +151,11 @@ class Admin
         echo '</thead>';
         echo '<tbody>';
         
+        //echo var_dump($data["hits"]);
+          //  echo var_dump($data["hits"]["hits"]);
         foreach ($data["hits"]["hits"] as $repository) {
+            
+            echo var_dump($repository['_source']);
             echo '<tr><td><a href="'.$repository['_id'].'">'.$repository['_source']['name'].'</a></td><td>'.$repository['_source']['metadataFormat'].'</td>';
             if (!empty($repository['_source']['qualis2015'])){
                 echo '<td>'.$repository['_source']['qualis2015'].'</td>';

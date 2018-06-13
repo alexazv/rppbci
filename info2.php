@@ -10,29 +10,16 @@ if (!empty($_POST)) {
 }
 
 $result_get = get::analisa_get($_GET);
-$query = $result_get['query'];  
-$limit = $result_get['limit'];
-$page = $result_get['page'];
-$skip = $result_get['skip'];
 
-if (isset($_GET["sort"])) {        
-    $query["sort"][$_GET["sort"]]["unmapped_type"] = "long";
-    $query["sort"][$_GET["sort"]]["missing"] = "_last";
-    $query["sort"][$_GET["sort"]]["order"] = "desc";
-    $query["sort"][$_GET["sort"]]["mode"] = "max";
-} else {
-    $query['sort']['facebook.facebook_total']['order'] = "desc";
-    $query['sort']['ano.keyword']['order'] = "desc";
-}    
+
+$query = $result_get['query'];
 
 $params = [];
 $params["index"] = $index;
-$params["type"] = $type;
-$params["size"] = $limit;
-$params["from"] = $skip;
-$params["body"] = $query; 
+$params["body"] = $query;
 
 $cursor = $client->search($params);
+
 $total = $cursor["hits"]["total"];
 
 /* Citeproc-PHP*/
@@ -96,7 +83,7 @@ $mode = "reference";
                     <input type="hidden" name="fields[]" value="author.person.name">
                     <input type="hidden" name="fields[]" value="authorUSP.name">
                     <input type="hidden" name="fields[]" value="about">
-                    <input type="hidden" name="fields[]" value="description"> 	    
+                    <input type="hidden" name="fields[]" value="description">       
                     <input class="uk-search-input" type="search" name="search[]" placeholder="Nova pesquisa..." autofocus>
                     </form>
                 </div>
@@ -108,119 +95,25 @@ $mode = "reference";
             </nav>            
         
             </div>
-	   
+       
             <div class="uk-width-1-1@s uk-width-1-1@m">
-	    
+        
                 <?php if (!empty($_SERVER["QUERY_STRING"])) : ?>                                    
                     <p class="uk-margin-top" uk-margin>
-                        <a class="uk-button uk-button-default uk-button-small" href="index.php"><?php echo $t->gettext('Começar novamente'); ?></a>	
+                        <a class="uk-button uk-button-default uk-button-small" href="index.php"><?php echo $t->gettext('Começar novamente'); ?></a> 
                         <?php 
                         
-                            if (!empty($_GET["search"])){
-                                foreach($_GET["search"] as $filters) {
-                                    $filters_array[] = $filters;
-                                    $name_field = explode(":",$filters);	
-                                    $filters = str_replace($name_field[0].":","",$filters);				
-                                    $diff["search"] = array_diff($_GET["search"],$filters_array);						
-                                    $url_push = $_SERVER['SERVER_NAME'].$_SERVER["SCRIPT_NAME"].'?'.http_build_query($diff);
-                                    echo '<a class="uk-button uk-button-default uk-button-small" href="http://'.$url_push.'">'.$filters.' <span uk-icon="icon: close; ratio: 1"></span></a>';
-                                    unset($filters_array); 	
-                                }
-                            }	
+                            
             
                         ?>
                         
                     </p>
-                <?php endif;?>	    
-	    
+                <?php endif;?>      
+        
             </div>       
 
-            <div class="uk-grid-divider" uk-grid>
-                <div class="uk-width-1-4@s uk-width-2-6@m">
-                    <div class="uk-panel uk-panel-box"> 
 
-                        <!-- Facetas - Início -->
-                        <h3 class="uk-panel-title">Refinar busca</h3>
-                            <hr>
-                            <ul class="uk-nav-default uk-nav-parent-icon" uk-nav="multiple: true">  
-                            <?php
-                                $facets = new facets();
-                                $facets->query = $query;
-
-                                if (!isset($_GET["search"])) {
-                                    $_GET["search"] = null;                                    
-                                }
-
-                                $facets->facet("tipo",10,"Tipo de material",null,"_term",$_GET["search"]);
-                                $facets->facet("source",100,"Título do periódico",null,"_term",$_GET["search"]);
-                                $facets->facet("set",100,"Set",null,"_term",$_GET["search"]);
-                                $facets->facet("autores.nomeCompletoDoAutor",120,"Autores",null,"_term",$_GET["search"]);
-                                $facets->facet("autores.afiliacao",120,"Instituição normalizada",null,"_term",$_GET["search"]);
-                                $facets->facet("autores.afiliacao_nao_normalizada",120,"Instituição não normalizada",null,"_term",$_GET["search"]);
-                                $facets->facet("ano",120,"Ano de publicação","desc","_term",$_GET["search"]);
-                                $facets->facet("palavras_chave",100,"Assuntos",null,"_term",$_GET["search"]);
-                                $facets->facet("artigoPublicado.nomeDaEditora",100,"Editora",null,"_term",$_GET["search"]);
-                                $facets->facet("artigoPublicado.volume",100,"Volume",null,"_term",$_GET["search"]);
-                                $facets->facet("artigoPublicado.fasciculo",100,"Fascículo",null,"_term",$_GET["search"]);
-                                $facets->facet("artigoPublicado.issn",100,"ISSN",null,"_term",$_GET["search"]);
-                                $facets->facet("qualis2015",100,"Qualis 2015 (Comunicação e Informação)",null,"_term",$_GET["search"]);
-                                echo '<li>Dados das referências citadas nas publicações</li>';
-                                $facets->facet("references.analyticTitle", 100, "Título", null, "_term", $_GET["search"]);
-                                $facets->facet("references.monogrTitle",100,"Título da publicação fonte",null,"_term",$_GET["search"]);
-                                $facets->facet("references.datePublished",100,"Data de publicação",null,"_term",$_GET["search"]);
-                                $facets->facet("references.authors",100,"Autor",null,"_term",$_GET["search"]);
-                                $facets->facet("references.meeting",100,"Nome do evento",null,"_term",$_GET["search"]);
-                                $facets->facet("references.publisher",100,"Editora",null,"_term",$_GET["search"]);
-                                $facets->facet("references.pubPlace",100,"Local de publicação",null,"_term",$_GET["search"]);
-                                $facets->facet("references.doi",100,"DOI",null,"_term",$_GET["search"]);
-                                $facets->facet("references.link",100,"Link",null,"_term",$_GET["search"]);
-                                echo '<li>Citações recebidas (Fonte: AMiner)</li>';
-                                $facets->facet_range("aminer.num_citation",100,"Citações no AMiner",$_GET["search"]);
-                            ?>
-                            </ul>
-                            <hr>            
-            
-                </div>
-            </div>
-
-            <div class="uk-width-3-4@s uk-width-4-6@m">
-
-                <!-- Gráfico do ano - Início -->
-                <?php if ($year_result_graph == true) : ?>
-                    <div class="uk-alert-primary" uk-alert>
-                        <a class="uk-alert-close" uk-close></a>
-                        <?php $ano_bar = ProcessaResultados::generateDataGraphBar($query, 'ano', "_term", 'desc', 'Ano', 10); ?>
-                        <div id="ano_chart" class="uk-visible@l"></div>
-                        <script type="application/javascript">
-                            var graphdef = {
-                                categories : ['Ano'],
-                                dataset : {
-                                    'Ano' : [<?= $ano_bar; ?>]
-                                }
-                            }
-                            var chart = uv.chart ('Bar', graphdef, {
-                                meta : {
-                                    position: '#ano_chart',
-                                    caption : 'Ano de publicação',
-                                    hlabel : 'Ano',
-                                    vlabel : 'registros'
-                                },
-                                graph : {
-                                    orientation : "Vertical"
-                                },
-                                dimension : {
-                                    width: 650,
-                                    height: 110
-                                }
-                            })
-                        </script>                        
-                        </div>
-                <?php endif; ?>
-                <!-- Gráfico do ano - Fim -->      
-                
-                <!-- Navegador de resultados - Início -->
-                <?php ui::pagination($page, $total, $limit, $t); ?>
-                <!-- Navegador de resultados - Fim -->                      
+            <div class="uk-width-3-4@s uk-width-4-6@m">               
 
                     
                     <hr class="uk-grid-divider">
@@ -297,7 +190,7 @@ $mode = "reference";
                                                 </form>
                                             <?php endif; ?>
                                         <?php endif; ?>
-                                        <!--
+                                        
                                         <li class="uk-h6 uk-margin-top">
                                             <p>Métricas:</p>
                                              <?php if (!empty($r["_source"]['doi'])) : ?>
@@ -332,7 +225,7 @@ $mode = "reference";
                                                             unset($facebook_url_array);
                                                         }
                                                     ?>
-                                                    
+                                                    -->
                                                 </li>
                                                 <li>
                                                     <?php if(isset($r["_source"]['div_cientifica'])): ?>
@@ -372,17 +265,6 @@ $mode = "reference";
                                                 <?php endif; ?>
                                             </ul>
                                         </li>
-                                        !-->
-
-                                            <form class="uk-form-stacked" target="_blank" action="info2.php">
-                                            <div class="uk-margin">
-                                                    <div class="uk-form-controls">
-                                                    <input type="hidden" name="search[]" value="<?php echo $r['_id'] ?>">
-                                                    <input type="hidden" name="fields[]" value="_id">
-                                            </div></div>                            
-                                            <button class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom"><?php echo "Ver Métricas" ?></button>
-                                        </form>
-
                                         <a class="uk-button uk-button-text" href="#" uk-toggle="target: #citacao<?php echo $conta_cit;?>; animation: uk-animation-fade"><?php echo $t->gettext('Como citar'); ?></a>
                                         <a class="uk-button uk-button-text" href="#" uk-toggle="target: #ref<?php echo $conta_cit;?>; animation: uk-animation-fade"><?php echo $t->gettext('Referências'); ?></a>
                                         <div id="citacao<?php echo $conta_cit;?>" hidden="hidden">
@@ -458,12 +340,7 @@ $mode = "reference";
                     </ul>
                     </div>
                     <hr class="uk-grid-divider">
-                
-                <!-- Navegador de resultados - Início -->
-                <?php ui::pagination($page, $total, $limit, $t); ?>
-                <!-- Navegador de resultados - Fim --> 
-
-                    
+                                   
                 </div>
             </div>
             <hr class="uk-grid-divider">
