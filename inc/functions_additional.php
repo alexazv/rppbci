@@ -15,8 +15,6 @@ class Google
 		foreach ($urls as $url) {
 	            $url_limpa = str_replace("http://", "", $url);
 	            $url_limpa = str_replace("https://", "", $url_limpa);
-	            $url_limpa = 'https://www.patreon.com/simplyaustin';
-
 
 	            $video_count = 0;
 
