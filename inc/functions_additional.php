@@ -15,12 +15,13 @@ class Google
 		foreach ($urls as $url) {
 	            $url_limpa = str_replace("http://", "", $url);
 	            $url_limpa = str_replace("https://", "", $url_limpa);
+	            $url_limpa = 'https://www.patreon.com/simplyaustin';
 
 
 	            $video_count = 0;
 
 	            //try{
-					$searchResponse = $youtube->search->listSearch('id,snippet', 
+					$searchResponse = $youtube->search->listSearch('snippet', 
 																	array(
 		      														'q' => $url_limpa,
 		      														'maxResults' => 10,
@@ -30,9 +31,11 @@ class Google
 		      														));
 
 					
+					//echo var_dump($searchResponse);
+
 					//$response_array = json_decode($searchResponse);
 
-					$video_count += $searchResponse["pageinfo"]["totalResults"];//$response_array->{"pageinfo"}->{"totalResults"};
+					$video_count += $searchResponse["pageInfo"]["totalResults"];//$response_array->{"pageinfo"}->{"totalResults"};
 
 					      //$videos .= sprintf('<li>%s (%s)</li>',
 					      //$searchResult['snippet']['title'], $searchResult['id']['videoId']);      
