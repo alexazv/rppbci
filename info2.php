@@ -214,6 +214,7 @@ $mode = "reference";
 
                                             <?php Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"]);?>
                                             <?php Google::youtube_search($r["_source"]['relation'],$r["_id"]);?>
+                                            <?php Google::google_plus_search($r["_source"]['relation'],$r["_id"]);?>
                                             <ul>
                                                 <li>
                                                 

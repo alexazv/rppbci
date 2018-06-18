@@ -62,9 +62,7 @@ class Google
 				    echo 'exception';
 				  }*/
 
-
-			      //$body["doc"]["youtube"]["fb".0] = ${"fb" . 0};
-				  $body["doc"]["youtube"]["reaction_count"] = $video_count;
+				  $body["doc"]["youtube"]["video_count"] = $video_count;
 				  $body["doc"]["youtube"]["date"] = date("Y-m-d");
 				  $body["doc_as_upsert"] = true;
 				  
@@ -72,6 +70,71 @@ class Google
 
 		}
 	}
+
+	static function google_plus_search($urls, $id){
+				global $plus;
+
+				foreach ($urls as $url) {
+			            $url_limpa = str_replace("http://", "", $url);
+			            $url_limpa = str_replace("https://", "", $url_limpa);
+
+			            $params = array(
+			              'query' => $url_limpa,
+			              'orderBy' => 'recent',
+			              'maxResults' => '20'
+			            );
+			            
+			            $results = $plus->activities->search($params);
+
+			            $activities = 0;
+			            $activities += count($results["items"]);
+
+			            //echo var_dump($results);
+
+			            while(count($results["items"]) > 0){
+			            	$params['pageToken'] = $results["nextPageToken"];
+			            	$results = $plus->activities->search($params);
+
+			            	$activities += count($results["items"]);
+			            	if($activities >= 100){
+			            		break;
+			            	}
+			            }
+
+			            /*foreach($results['items'] as $result) {
+			              print "Result: {$result['object']['content']}\n";
+			            }*/
+
+
+						 echo '<table class="uk-table"><caption>Atividades no Google+</caption>';        
+		            echo '<thead>
+		                    <tr>                
+		                        <th>Total</th>
+		                    </tr>
+		                </thead>';
+		            echo '<tbody>
+		                    <tr>
+		                        <td>'.$activities.'</td>
+
+		                  </tbody>';   
+		            echo '</table><br/>';
+
+
+						//TODO: Make errors specific
+						/*}catch (Google_Service_Exception $e) {
+						    echo 'Google Service Exception';
+						  } catch (Google_Exception $e) {
+						    echo 'exception';
+						  }*/
+
+						  /*$body["doc"]["youtube"]["video_count"] = $video_count;
+						  $body["doc"]["youtube"]["date"] = date("Y-m-d");
+						  $body["doc_as_upsert"] = true;
+						  
+						  elasticsearch::elastic_update($id, "journals", $body);
+						  */
+		}
+	}	
 }
 
 class Twitter_API{
@@ -94,22 +157,15 @@ class Twitter_API{
 
 					$retweet_count = 0;
 					$favorite_count = 0;
+					$tweet_count = count($searchResponse);
 
 					
 					foreach ($searchResponse as $status) {
 					
 						$retweet_count+=$status->retweet_count;
 						$favorite_count+=$status->favorite_count;
-					}
-
-					//$response_array = json_decode($searchResponse);
-
-					//$video_count += $searchResponse["pageinfo"]["totalResults"];//$response_array->{"pageinfo"}->{"totalResults"};
-
-					      //$videos .= sprintf('<li>%s (%s)</li>',
-					      //$searchResult['snippet']['title'], $searchResult['id']['videoId']);      
-					
-				
+					}    
+							
 
 				 echo '<table class="uk-table"><caption>Twitter Response for '.$query.'</caption>';        
             echo '<thead>
@@ -121,7 +177,7 @@ class Twitter_API{
 
                 	echo '<tbody>
                         <tr>
-                            <td>.'.count($searchResponse).' Pessoas Tweetaram sobre</td>
+                            <td>.'.$tweet_count.' Pessoas Tweetaram sobre</td>
 
                       </tbody>';
 
@@ -161,14 +217,13 @@ class Twitter_API{
 				    echo 'exception';
 				  }*/
 
-
-			      //$body["doc"]["youtube"]["fb".0] = ${"fb" . 0};
-				  /*$body["doc"]["youtube"]["reaction_count"] = $video_count;
-				  $body["doc"]["youtube"]["date"] = date("Y-m-d");
-				  $body["doc_as_upsert"] = true;
-				  
-				  elasticsearch::elastic_update($id, "journals", $body);
-				  */
+			      $body["doc"]["twitter"]["tweet_count"] = $tweet_count;
+			      $body["doc"]["twitter"]["retweet_count"] = $retweet_count;
+			      $body["doc"]["twitter"]["favprote_count"] = $favorite_count;
+			      $body["doc"]["twitter"]["date"] = date("Y-m-d");
+			      $body["doc_as_upsert"] = true;
+			      
+			      elasticsearch::elastic_update($id, "journals", $body);
 
 		}
 	}
