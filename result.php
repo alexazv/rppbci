@@ -318,18 +318,16 @@ $mode = "reference";
                                                 </li>
                                                 <li>
                                                     <?php $dois[] = $r["_source"]['doi']; ?>
-                                                     <?php Facebook::facebook_doi($dois, $r["_id"]); ?>
                                                      <?php unset($dois); ?>
                                                 </li>
                                             </ul>
                                             <?php endif; ?>
 
-                                            <?php Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"]);?>
-                                            <?php Google::youtube_search($r["_source"]['relation'],$r["_id"]);?>
+
                                             <ul>
                                                 <li>
                                                 
-                                                    <?php Facebook::facebook_data($r["_source"]['relation'],$r["_id"]);?>
+                                                    
                                                     <!--
                                                     < ?php
                                                         if (!empty($r["_source"]['relation'])){
