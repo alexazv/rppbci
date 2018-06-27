@@ -212,9 +212,9 @@ $mode = "reference";
                                             </ul>
                                             <?php endif; ?>
 
-                                            <?php Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"]);?>
-                                            <?php Google::youtube_search($r["_source"]['relation'],$r["_id"]);?>
-                                            <?php Google::google_plus_search($r["_source"]['relation'],$r["_id"]);?>
+                                            <?php Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"], True);?>
+                                            <?php Google::youtube_search($r["_source"]['relation'],$r["_id"], True);?>
+                                            <?php Google::google_plus_search($r["_source"]['relation'],$r["_id"], True);?>
                                             <ul>
                                                 <li>
                                                 

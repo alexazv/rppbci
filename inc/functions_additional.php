@@ -9,7 +9,7 @@ include  'config.php';
 class Google
 {
 		
-	static function youtube_search($urls, $id){
+	static function youtube_search($urls, $id, $verbose){
 		global $youtube;
 
 		foreach ($urls as $url) {
@@ -41,27 +41,28 @@ class Google
 				
 
 
-				 echo '<table class="uk-table"><caption>Vídeos no Youtube</caption>';        
-            echo '<thead>
-                    <tr>                
-                        <th>Total</th>
-                    </tr>
-                </thead>';
-            echo '<tbody>
-                    <tr>
-                        <td>'.$video_count.'</td>
+			if($verbose == True){
+				echo '<table class="uk-table"><caption>Vídeos no Youtube</caption>';        
+	            echo '<thead>
+	                    <tr>                
+	                        <th>Total</th>
+	                    </tr>
+	                </thead>';
+	            echo '<tbody>
+	                    <tr>
+	                        <td>'.$video_count.'</td>
 
-                  </tbody>';   
-            echo '</table><br/>';
+	                  </tbody>';   
+	            echo '</table><br/>';
 
 
-				//TODO: Make errors specific
-				/*}catch (Google_Service_Exception $e) {
-				    echo 'Google Service Exception';
-				  } catch (Google_Exception $e) {
-				    echo 'exception';
-				  }*/
-
+					//TODO: Make errors specific
+					/*}catch (Google_Service_Exception $e) {
+					    echo 'Google Service Exception';
+					  } catch (Google_Exception $e) {
+					    echo 'exception';
+					  }*/
+			}
 				  $body["doc"]["youtube"]["video_count"] = $video_count;
 				  $body["doc"]["youtube"]["date"] = date("Y-m-d");
 				  $body["doc_as_upsert"] = true;
@@ -71,7 +72,7 @@ class Google
 		}
 	}
 
-	static function google_plus_search($urls, $id){
+	static function google_plus_search($urls, $id, $verbose){
 				global $plus;
 
 				foreach ($urls as $url) {
@@ -105,7 +106,7 @@ class Google
 			              print "Result: {$result['object']['content']}\n";
 			            }*/
 
-
+			            if($verbose == True){
 						 echo '<table class="uk-table"><caption>Atividades no Google+</caption>';        
 		            echo '<thead>
 		                    <tr>                
@@ -120,26 +121,18 @@ class Google
 		            echo '</table><br/>';
 
 
-						//TODO: Make errors specific
-						/*}catch (Google_Service_Exception $e) {
-						    echo 'Google Service Exception';
-						  } catch (Google_Exception $e) {
-						    echo 'exception';
-						  }*/
+					}
 
-						  /*$body["doc"]["youtube"]["video_count"] = $video_count;
-						  $body["doc"]["youtube"]["date"] = date("Y-m-d");
-						  $body["doc_as_upsert"] = true;
-						  
-						  elasticsearch::elastic_update($id, "journals", $body);
-						  */
+				  $body["doc"]["google_plus"]["activities"] = $activities;
+				  
+				  elasticsearch::elastic_update($id, "journals", $body);
 		}
 	}	
 }
 
 class Twitter_API{
 
-	static function twitter_search($urls, $id){
+	static function twitter_search($urls, $id, $verbose){
 		global $twitter;
 
 
@@ -166,7 +159,7 @@ class Twitter_API{
 						$favorite_count+=$status->favorite_count;
 					}    
 							
-
+				if($verbose == True){
 				 echo '<table class="uk-table"><caption>Twitter Response for '.$query.'</caption>';        
             echo '<thead>
                     <tr>                
@@ -198,7 +191,7 @@ class Twitter_API{
                             <td>.'.$favorite_count.' Curtidas no Total</td>
 
                       </tbody>';
-
+                }
                       
 
                 echo '<thead>
@@ -219,7 +212,7 @@ class Twitter_API{
 
 			      $body["doc"]["twitter"]["tweet_count"] = $tweet_count;
 			      $body["doc"]["twitter"]["retweet_count"] = $retweet_count;
-			      $body["doc"]["twitter"]["favprote_count"] = $favorite_count;
+			      $body["doc"]["twitter"]["favorite_count"] = $favorite_count;
 			      $body["doc"]["twitter"]["date"] = date("Y-m-d");
 			      $body["doc_as_upsert"] = true;
 			      
@@ -229,6 +222,4 @@ class Twitter_API{
 	}
 
 }
-
-
 ?>
