@@ -143,7 +143,7 @@ class Twitter_API{
 	            //$query = '"' .$url. '" "'.$url_limpa.'""  -filter:retweets';
 
 	            $query = $url_limpa.' -filter:retweets';
-
+								
 	            //try{
 					$searchResponse = $twitter->search(['q' => $query,
 														'count' => 100]);
