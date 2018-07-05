@@ -200,6 +200,16 @@ PUT /rppbci/journals/_mapping
                   }
                 }
               },
+              "google_plus": {
+                "properties": {
+                  "date": {
+                    "type": "date"
+                  },
+                  "activities": {
+                    "type": "long"
+                  }
+                }
+              },
               "harvester_id": {
                 "type": "text",
                 "fields": {

@@ -383,8 +383,49 @@ $mode = "reference";
                                                     <input type="hidden" name="search[]" value="<?php echo $r['_id'] ?>">
                                                     <input type="hidden" name="fields[]" value="_id">
                                             </div></div>                            
-                                            <button class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom"><?php echo "Ver Métricas" ?></button>
+                                            <button class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom"><?php echo "Ver Detalhes" ?></button>
                                         </form>
+
+                                        <p>Métricas:</p>
+
+                                        <table style="width:100%">
+                                          <caption>Métricas</caption>
+                                          <?php 
+                                          $exists = isset($r['_source']['facebook']['facebook_total']); ?>
+                                          <tr>
+                                            <td>Facebook</td>
+                                            <td><?php echo $r['_source']['facebook']['facebook_total'].' Interações'; ?></td>
+                                          </tr>
+                                          <tr>
+                                            <td>Twitter</td>
+                                            <td><?php 
+                                            $exists = isset($r['_source']['twitter']['tweet_count']);
+                                            if($exists) {
+                                                echo $r['_source']['twitter']['tweet_count'].' Interações';
+                                                } else {
+                                                    echo 'Sem Informações';
+                                                } ?></td>
+                                          </tr>
+                                          <td>Youtube</td>
+                                            <td><?php 
+                                            $exists = isset($r['_source']['youtube']['video_count']);
+                                            if($exists) {
+                                                echo $r['_source']['youtube']['video_count'].' Interações';
+                                                } else {
+                                                    echo 'Sem Informações';
+                                                    } ?></td>
+                                          </tr>
+                                           <td>Google +</td>
+                                            <td><?php 
+                                            $exists = isset($r['_source']['google_plus']['activities_count']);
+                                            if($exists) {
+                                                echo $r['_source']['google_plus']['activities_count'].' Interações';
+                                                } else {
+                                                    echo 'Sem Informações';
+                                                    } ?></td>
+                                          </tr>
+                                        
+                                        </table>
 
                                         <a class="uk-button uk-button-text" href="#" uk-toggle="target: #citacao<?php echo $conta_cit;?>; animation: uk-animation-fade"><?php echo $t->gettext('Como citar'); ?></a>
                                         <a class="uk-button uk-button-text" href="#" uk-toggle="target: #ref<?php echo $conta_cit;?>; animation: uk-animation-fade"><?php echo $t->gettext('Referências'); ?></a>
