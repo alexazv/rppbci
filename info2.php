@@ -212,9 +212,74 @@ $mode = "reference";
                                             </ul>
                                             <?php endif; ?>
 
-                                            <?php Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"], True);?>
-                                            <?php Google::youtube_search($r["_source"]['relation'],$r["_id"], True);?>
-                                            <?php Google::google_plus_search($r["_source"]['relation'],$r["_id"], True);?>
+                                            <?php /*Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"], True);*/
+
+                                            echo '<table class="uk-table"><caption>Twitter Response </caption>';        
+                                            echo '<thead>
+                                                    <tr>                
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>';
+
+
+                                                    echo '<tbody>
+                                                        <tr>
+                                                            <td>.'.$r['_source']['twitter']['tweet_count'].' Pessoas Tweetaram sobre</td>
+
+                                                      </tbody>';
+
+                                                     
+                                                      echo '<tbody>
+                                                        <tr>
+                                                            <td>.'.$r['_source']['twitter']['retweet_count'].' Retweets no Total</td>
+
+                                                      </tbody>';
+
+                                                      echo '<tbody>
+                                                        <tr>
+                                                            <td>.'.$r['_source']['twitter']['favorite_count'].' Curtidas no Total</td>
+
+                                                      </tbody>';
+                                                      
+
+                                                echo '<thead>
+                                                    <tr>                
+                                                        <th> </th>
+                                                    </tr>
+                                                </thead>';
+
+
+                                            ?>
+                                            <?php /*Google::youtube_search($r["_source"]['relation'],$r["_id"], True);*/
+                                                 echo '<table class="uk-table"><caption>Vídeos no Youtube</caption>';        
+                                                    echo '<thead>
+                                                            <tr>                
+                                                                <th>Total</th>
+                                                            </tr>
+                                                        </thead>';
+                                                    echo '<tbody>
+                                                            <tr>
+                                                                <td>'.$r['_source']['youtube']['video_count'].'</td>
+
+                                                          </tbody>';   
+                                                    echo '</table><br/>';
+                                            ?>
+                                            <?php /*Google::google_plus_search($r["_source"]['relation'],$r["_id"], True);*/
+                                            echo '<table class="uk-table"><caption>Atividades no Google+</caption>';        
+                                            echo '<thead>
+                                                    <tr>                
+                                                        <th>Total</th>
+                                                    </tr>
+                                                </thead>';
+                                            echo '<tbody>
+                                                    <tr>
+                                                        <td>'.$r['_source']['google_plus']['activities_count'].'</td>
+
+                                                  </tbody>';   
+                                            echo '</table><br/>';
+
+
+                                            ?>
                                             <ul>
                                                 <li>
                                                 

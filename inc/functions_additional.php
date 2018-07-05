@@ -11,12 +11,13 @@ class Google
 		
 	static function youtube_search($urls, $id, $verbose){
 		global $youtube;
+		$video_count = 0;
 
 		foreach ($urls as $url) {
 	            $url_limpa = str_replace("http://", "", $url);
 	            $url_limpa = str_replace("https://", "", $url_limpa);
 
-	            $video_count = 0;
+	            
 
 	            //try{
 					$searchResponse = $youtube->search->listSearch('snippet', 
@@ -63,18 +64,18 @@ class Google
 					    echo 'exception';
 					  }*/
 			}
-				  $body["doc"]["youtube"]["video_count"] = $video_count;
-				  $body["doc"]["youtube"]["date"] = date("Y-m-d");
-				  $body["doc_as_upsert"] = true;
-				  
-				  elasticsearch::elastic_update($id, "journals", $body);
-
 		}
+
+		$body["doc"]["youtube"]["video_count"] = $video_count;
+		$body["doc"]["youtube"]["date"] = date("Y-m-d");
+		$body["doc_as_upsert"] = true;
+				  
+		elasticsearch::elastic_update($id, "journals", $body);
 	}
 
 	static function google_plus_search($urls, $id, $verbose){
 				global $plus;
-
+				$totalActivities = 0;
 				foreach ($urls as $url) {
 			            $url_limpa = str_replace("http://", "", $url);
 			            $url_limpa = str_replace("https://", "", $url_limpa);
@@ -84,10 +85,10 @@ class Google
 			              'orderBy' => 'recent',
 			              'maxResults' => '20'
 			            );
-			            
+			            $activities = 0;
 			            $results = $plus->activities->search($params);
 
-			            $activities = 0;
+			            
 			            $activities += count($results["items"]);
 
 			            //echo var_dump($results);
@@ -122,11 +123,11 @@ class Google
 
 
 					}
-
-				  $body["doc"]["google_plus"]["activities"] = $activities;
-				  
-				  elasticsearch::elastic_update($id, "journals", $body);
+				$totalActivities += $totalActivities;
 		}
+
+		$body["doc"]["google_plus"]["activities"] = $activities;
+				  elasticsearch::elastic_update($id, "journals", $body);
 	}	
 }
 
@@ -135,6 +136,9 @@ class Twitter_API{
 	static function twitter_search($urls, $id, $verbose){
 		global $twitter;
 
+		$totalRetweet_count = 0;
+		$totalFavorite_count = 0;
+		$totalTweet_count = 0;
 
 		foreach ($urls as $url) {
 	            $url_limpa = str_replace("http://", "", $url);
@@ -174,12 +178,7 @@ class Twitter_API{
 
                       </tbody>';
 
-                      /*echo '<tbody>
-                        <tr>
-                            <td>.'.var_dump($searchResponse).' Retweets no Total</td>
-
-                      </tbody>';*/
-
+                     
                       echo '<tbody>
                         <tr>
                             <td>.'.$retweet_count.' Retweets no Total</td>
@@ -210,15 +209,20 @@ class Twitter_API{
 				    echo 'exception';
 				  }*/
 
-			      $body["doc"]["twitter"]["tweet_count"] = $tweet_count;
-			      $body["doc"]["twitter"]["retweet_count"] = $retweet_count;
-			      $body["doc"]["twitter"]["favorite_count"] = $favorite_count;
+		}
+
+
+		$totalRetweet_count += $retweet_count;
+		$totalFavorite_count += $favorite_count;
+		$totalTweet_count += $totalTweet_count;
+		$body["doc"]["twitter"]["tweet_count"] = $totalTweet_count;
+			      $body["doc"]["twitter"]["retweet_count"] = $totalRetweet_count;
+			      $body["doc"]["twitter"]["favorite_count"] = $totalFavorite_count;
 			      $body["doc"]["twitter"]["date"] = date("Y-m-d");
 			      $body["doc_as_upsert"] = true;
 			      
 			      elasticsearch::elastic_update($id, "journals", $body);
 
-		}
 	}
 
 }
