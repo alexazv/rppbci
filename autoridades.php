@@ -5,6 +5,7 @@
             include('inc/config.php'); 
             include('inc/functions.php');            
             include('inc/meta-header.php');
+			set_time_limit(300);
 
             /* Consulta n registros ainda não corrigidos */
             if (empty($_GET)) {

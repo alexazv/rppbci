@@ -1,6 +1,7 @@
 <?php 
 require 'inc/config.php';             
 require 'inc/functions.php';
+set_time_limit(600);
 if (isset($_GET["oai"])) {
     $oaiUrl = $_GET["oai"];
     $client_harvester = new \Phpoaipmh\Client(''.$oaiUrl.'');

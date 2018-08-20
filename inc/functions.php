@@ -292,7 +292,7 @@ class Facebook
         $i = 0;
         foreach ($responses as $key => $response) {
             $response_array = json_decode($response->getBody());
-            echo var_dump($response_array);
+            //echo var_dump($response_array);
             echo '<a class="uk-button" href="'.(string)$response_array->{"id"}.'">Link</a>';
             if (isset($response_array->{"engagement"})) {
                 

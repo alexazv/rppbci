@@ -10,14 +10,18 @@ class Update {
 			global $index;
 			global $type;
 			global $client;
+
 			$query = '{
 						"query": {
-							"match_all": {}
-						 },                
-						"sort" : [
-							{"facebook.date" : {"order" : "asc"}}
-							]
-						}';
+							"bool": {
+								"must_not": {
+									"exists": {
+										"field": "facebook"
+									}
+								}
+							}
+						}
+					}';
 			
 			$params = [];
 			$params["index"] = $index;
@@ -25,7 +29,22 @@ class Update {
 			$params["size"] = 10; //change
 			$params["body"] = $query;        
 			
-			$data = $client->search($params);  
+			$data = $client->search($params);
+			
+			if ($data["hits"]["hits"].count == 0) {
+				$query = '{
+						"query": {
+							"match_all": {}
+						 },                
+						"sort" : [
+							{"facebook.date" : {"order" : "asc"}}
+							]
+						}'
+						;
+				$params["body"] = $query;        
+			
+				$data = $client->search($params);
+			} 
 			//print_r($data);
 			
 			foreach ($data["hits"]["hits"] as $r) 

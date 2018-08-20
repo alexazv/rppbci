@@ -394,7 +394,15 @@ $mode = "reference";
                                           $exists = isset($r['_source']['facebook']['facebook_total']); ?>
                                           <tr>
                                             <td>Facebook</td>
-                                            <td><?php echo $r['_source']['facebook']['facebook_total'].' Interações'; ?></td>
+                                            <td>
+											
+											<?php 
+											if($exists) {
+                                                echo $r['_source']['facebook']['facebook_total'].' Interações';
+                                                } else {
+                                                    echo 'Sem Informações';
+                                                }
+											?></td>
                                           </tr>
                                           <tr>
                                             <td>Twitter</td>
