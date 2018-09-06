@@ -293,7 +293,7 @@ class Facebook
         foreach ($responses as $key => $response) {
             $response_array = json_decode($response->getBody());
             //echo var_dump($response_array);
-            echo '<a class="uk-button" href="'.(string)$response_array->{"id"}.'">Link</a>';
+            //echo '<a class="uk-button" href="'.(string)$response_array->{"id"}.'">Link</a>';
             if (isset($response_array->{"engagement"})) {
                 
                 $fb_reaction_count+= $response_array->{"engagement"}->{'reaction_count'};

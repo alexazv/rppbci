@@ -30,8 +30,8 @@ class Update {
 			$params["body"] = $query;        
 			
 			$data = $client->search($params);
-			
-			if ($data["hits"]["hits"].count == 0) {
+
+			if (empty($data["hits"]["hits"])) {
 				$query = '{
 						"query": {
 							"match_all": {}
@@ -45,7 +45,7 @@ class Update {
 			
 				$data = $client->search($params);
 			} 
-			//print_r($data);
+			
 			
 			foreach ($data["hits"]["hits"] as $r) 
 	{            if (!empty($r["_source"]['doi'])){
