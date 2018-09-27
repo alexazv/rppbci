@@ -255,7 +255,7 @@ class Facebook
     static function facebook_data($urls,$id) 
     {
         global $fb;
-        foreach ($urls as $url) {
+        foreach ((array)$urls as $url) {
             $url_limpa = str_replace("http://", "", $url);
             $url_limpa = str_replace("https://", "", $url_limpa);
             

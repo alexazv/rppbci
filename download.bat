@@ -19,7 +19,7 @@ wget -O NUL "192.168.137.1/harvester.php?oai=http://www.periodicos.ufc.br/inform
 wget -O NUL "192.168.137.1/harvester.php?oai=http://revista.ibict.br/fiinf/oai&qualis2015=B5&metadataFormat=nlm"
 wget -O NUL "192.168.137.1/harvester.php?oai=http://periodicos.ufca.edu.br/ojs/index.php/folhaderosto/oai&qualis2015=B5&metadataFormat=nlm"
 wget -O NUL "192.168.137.1/harvester.php?oai=http://revistas.ufg.br/ci/oai&qualis2015=B2&metadataFormat=nlm"
-wget -O NUL "192.168.137.1/harvester.php?oai=http://periodicos.ufpb.br/ojs/index.php/itec/oai &qualis2015=B5&metadataFormat=nlm"
+wget -O NUL "192.168.137.1/harvester.php?oai=http://periodicos.ufpb.br/ojs/index.php/itec/oai&qualis2015=B5&metadataFormat=nlm"
 wget -O NUL "192.168.137.1/harvester.php?oai=https://revistas.ufrj.br/index.php/rca/oai&qualis2015=B5&metadataFormat=nlm"
 wget -O NUL "192.168.137.1/harvester.php?oai=http://portaldeperiodicos.eci.ufmg.br/index.php/moci/oai&qualis2015=B5&metadataFormat=nlm"
 wget -O NUL "192.168.137.1/harvester.php?oai=http://www.portalseer.ufba.br/index.php/revistaici/oai&qualis2015=B1&metadataFormat=nlm"

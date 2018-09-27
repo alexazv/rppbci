@@ -13,7 +13,7 @@ class Google
 		global $youtube;
 		$video_count = 0;
 
-		foreach ($urls as $url) {
+		foreach ((array)$urls as $url) {
 	            $url_limpa = str_replace("http://", "", $url);
 	            $url_limpa = str_replace("https://", "", $url_limpa);
 
@@ -76,7 +76,7 @@ class Google
 	static function google_plus_search($urls, $id, $verbose){
 				global $plus;
 				$totalActivities = 0;
-				foreach ($urls as $url) {
+				foreach ((array)$urls as $url) {
 			            $url_limpa = str_replace("http://", "", $url);
 			            $url_limpa = str_replace("https://", "", $url_limpa);
 
@@ -123,10 +123,10 @@ class Google
 
 
 					}
-				$totalActivities += $totalActivities;
+				$totalActivities += $activities;
 		}
 
-		$body["doc"]["google_plus"]["activities"] = $activities;
+		$body["doc"]["google_plus"]["activities"] = $totalActivities;
 				  elasticsearch::elastic_update($id, "journals", $body);
 	}	
 }
@@ -140,7 +140,7 @@ class Twitter_API{
 		$totalFavorite_count = 0;
 		$totalTweet_count = 0;
 
-		foreach ($urls as $url) {
+		foreach ((array)$urls as $url) {
 	            $url_limpa = str_replace("http://", "", $url);
 	            $url_limpa = str_replace("https://", "", $url_limpa);
 	            //$url_limpa = '"https://www.omgvip.com/jc-caylen/" -filter:retweets'
@@ -209,12 +209,11 @@ class Twitter_API{
 				    echo 'exception';
 				  }*/
 
-		}
-
 
 		$totalRetweet_count += $retweet_count;
 		$totalFavorite_count += $favorite_count;
 		$totalTweet_count += $totalTweet_count;
+		}
 		$body["doc"]["twitter"]["tweet_count"] = $totalTweet_count;
 			      $body["doc"]["twitter"]["retweet_count"] = $totalRetweet_count;
 			      $body["doc"]["twitter"]["favorite_count"] = $totalFavorite_count;

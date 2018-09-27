@@ -55,12 +55,20 @@ class Update {
 					Facebook::facebook_doi($dois, $r["_id"]);
 					unset($dois);
 				}
-
-				Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"], true);
-				Google::youtube_search($r["_source"]['relation'],$r["_id"], true);
-				Google::google_plus_search($r["_source"]['relation'],$r["_id"], true);
-				  
-				Facebook::facebook_data($r["_source"]['relation'],$r["_id"], true);
+				
+				//var_dump($r);
+				//return;
+				if (isset($r["_source"]['relation'])) {
+					Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"], true);
+					Google::youtube_search($r["_source"]['relation'],$r["_id"], true);
+					Google::google_plus_search($r["_source"]['relation'],$r["_id"], true);
+					Facebook::facebook_data($r["_source"]['relation'],$r["_id"], true);
+				} else {
+					Twitter_API::twitter_search($r['relation'],$r["_id"], true);
+					Google::youtube_search($r['relation'],$r["_id"], true);
+					Google::google_plus_search($r['relation'],$r["_id"], true);
+					Facebook::facebook_data($r['relation'],$r["_id"], true);
+				}	
 						  
 				if(isset($r["_source"]['div_cientifica'])){
 					foreach ($r["_source"]['div_cientifica'] as $div_source) {
