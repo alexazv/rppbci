@@ -51,9 +51,25 @@ class Inicio
                         "match_all": {}
                      },                
                     "sort" : [
-                        {"facebook.facebook_total" : {"order" : "desc"}}
+                        {"youtube.video_count" : {"order" : "desc"},
+						"facebook.facebook_total" : {"order" : "desc"},
+						"twitter.tweet_count": {"order" : "desc"},
+						"google_plus.activities": {"order" : "desc"}}
                         ]
                     }';
+					/*'{
+                    "query": {
+                        "match_all": {}
+                     },                
+                    "sort" : {
+						"_script": {
+							"type": "number",
+							"script": "return _source.facebook.facebook_total + _source.youtube.video_count",
+							"lang": "groovy",
+							"order": "desc"
+						}
+					}
+                }';*/
         
         $params = [];
         $params["index"] = $index;
@@ -64,10 +80,14 @@ class Inicio
         $data = $client->search($params);  
         //print_r($data);
         foreach ($data["hits"]["hits"] as $r) {
+			$total = $r['_source']['facebook']['facebook_total'];
+			$total += $r['_source']['twitter']['tweet_count'];
+			$total += $r['_source']['youtube']['video_count'];
+			$total += $r['_source']['google_plus']['activities'];
             //var_dump($r);
             echo '<dl class="uk-description-list">'; 
             //print_r($r);
-            echo '<dt><a href="'.$r['_source']['url_principal'].'">'.$r['_source']['titulo'].' ('.$r['_source']['ano'].' - '.$r['_source']['source'].') - <b>'.$r['_source']['facebook']['facebook_total'].' interações</b></a></dt>';
+            echo '<dt><a href="'.$r['_source']['url_principal'].'">'.$r['_source']['titulo'].' ('.$r['_source']['ano'].' - '.$r['_source']['source'].') - <b>'.$total.' interações</b></a></dt>';
             echo '<dd>';
             if (!empty($r["_source"]['autores'])) {                  
                 foreach ($r["_source"]['autores'] as $autores) {

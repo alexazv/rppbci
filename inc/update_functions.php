@@ -18,6 +18,11 @@ class Update {
 									"exists": {
 										"field": "facebook"
 									}
+								},
+								"must": {
+									"exists": {
+									"field": "relation"
+									}
 								}
 							}
 						}
@@ -34,8 +39,13 @@ class Update {
 			if (empty($data["hits"]["hits"])) {
 				$query = '{
 						"query": {
-							"match_all": {}
-						 },                
+							"bool": {
+							"match_all": {},
+							"exists": {
+									"field": "relation"
+								}
+							}
+						},                
 						"sort" : [
 							{"facebook.date" : {"order" : "asc"}}
 							]
@@ -56,19 +66,20 @@ class Update {
 					unset($dois);
 				}
 				
-				//var_dump($r);
-				//return;
-				if (isset($r["_source"]['relation'])) {
-					Twitter_API::twitter_search($r["_source"]['relation'],$r["_id"], true);
-					Google::youtube_search($r["_source"]['relation'],$r["_id"], true);
-					Google::google_plus_search($r["_source"]['relation'],$r["_id"], true);
+				var_dump($r);
+				//continue;
+				//if (isset($r["_source"]["relation"])) {
+					Twitter_API::twitter_search($r["_source"]["relation"],$r["_id"], true);
+					Google::youtube_search($r["_source"]["relation"],$r["_id"], true);
+					Google::google_plus_search($r["_source"]["relation"],$r["_id"], true);
 					Facebook::facebook_data($r["_source"]['relation'],$r["_id"], true);
-				} else {
-					Twitter_API::twitter_search($r['relation'],$r["_id"], true);
-					Google::youtube_search($r['relation'],$r["_id"], true);
-					Google::google_plus_search($r['relation'],$r["_id"], true);
-					Facebook::facebook_data($r['relation'],$r["_id"], true);
-				}	
+				/*} else {
+					Twitter_API::twitter_search($r["_source"]["url"],$r["_id"], true);
+					Google::youtube_search($r["_source"]["url"],$r["_id"], true);
+					Google::google_plus_search($r["_source"]["url"],$r["_id"], true);
+					Facebook::facebook_data($r["_source"]["url"],$r["_id"], true);
+				}
+				*/				
 						  
 				if(isset($r["_source"]['div_cientifica'])){
 					foreach ($r["_source"]['div_cientifica'] as $div_source) {
